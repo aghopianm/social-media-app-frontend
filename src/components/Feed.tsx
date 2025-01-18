@@ -1,4 +1,4 @@
-import React, { useState, useEffect } from 'react';
+import React, { useState, useEffect, useCallback } from 'react';
 import { useNavigate } from 'react-router-dom';
 import axios from 'axios';
 
@@ -19,28 +19,13 @@ const Feed = () => {
   const [posts, setPosts] = useState<Post[]>([]);
   const [newPost, setNewPost] = useState('');
 
-  // Get token from localStorage
-  const token = localStorage.getItem('token');
-
-  // Create axios instance with default headers
-  const axiosAuth = axios.create({
-    headers: {
-      Authorization: `Bearer ${token}`
-    }
-  });
-
-  useEffect(() => {
-    // If no token, redirect to login
-    if (!token) {
-      navigate('/');
-      return;
-    }
-    fetchPosts();
-  }, [token, navigate]);
-
-  const fetchPosts = async () => {
+  // Use useCallback to memoize the fetchPosts function
+  const fetchPosts = useCallback(async () => {
     try {
-      const response = await axiosAuth.get(`${API_URL}/api/posts/feed`);
+      const token = localStorage.getItem('token');
+      const response = await axios.get(`${API_URL}/api/posts/feed`, {
+        headers: { Authorization: `Bearer ${token}` }
+      });
       setPosts(response.data);
     } catch (error) {
       console.error('Error fetching posts:', error);
@@ -49,12 +34,16 @@ const Feed = () => {
         navigate('/');
       }
     }
-  };
+  }, [navigate]); // Include navigate in dependencies
+
+  useEffect(() => {
+    fetchPosts();
+  }, [fetchPosts]); // Now fetchPosts is stable and can be included
 
   const createPost = async (e: React.FormEvent) => {
     e.preventDefault();
     try {
-      await axiosAuth.post(`${API_URL}/api/posts`, { content: newPost });
+      await axios.post(`${API_URL}/api/posts`, { content: newPost });
       setNewPost('');
       fetchPosts();
     } catch (error) {
@@ -64,7 +53,7 @@ const Feed = () => {
 
   const handleLike = async (postId: number) => {
     try {
-      await axiosAuth.post(`${API_URL}/api/posts/${postId}/like`);
+      await axios.post(`${API_URL}/api/posts/${postId}/like`);
       setPosts(posts.map(post => {
         if (post.id === postId) {
           return {
