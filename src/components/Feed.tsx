@@ -94,7 +94,7 @@ const Feed = () => {
         navigate('/');
       }
     }
-  }, [navigate]);
+  }, [navigate, getAuthHeaders]);
 
   useEffect(() => {
     fetchPosts();
