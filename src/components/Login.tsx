@@ -1,7 +1,6 @@
 import React, { useState } from 'react';
 import { useNavigate, Link } from 'react-router-dom';
 import axios from 'axios';
-
 const API_URL = 'https://social-media-app-1-0wkt.onrender.com';
 
 const Login = () => {
