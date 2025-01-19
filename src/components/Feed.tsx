@@ -18,7 +18,7 @@ const Feed = () => {
   const [newPost, setNewPost] = useState('');
   const navigate = useNavigate();
 
-  const getAuthHeaders = () => {
+  const getAuthHeaders = useCallback(() => {
     const token = localStorage.getItem('token');
     if (!token) {
       navigate('/');
@@ -28,7 +28,7 @@ const Feed = () => {
       'Authorization': `Bearer ${token}`,
       'Content-Type': 'application/json'
     };
-  };
+  }, [navigate]);
 
   const createPost = async (e: React.FormEvent) => {
     e.preventDefault();
@@ -94,7 +94,7 @@ const Feed = () => {
         navigate('/');
       }
     }
-  }, [navigate, getAuthHeaders]);
+  }, [getAuthHeaders]);
 
   useEffect(() => {
     fetchPosts();
