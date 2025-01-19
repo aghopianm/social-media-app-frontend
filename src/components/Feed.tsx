@@ -1,6 +1,7 @@
 import React, { useState, useCallback, useEffect } from 'react';
 import { useNavigate } from 'react-router-dom';
 import axios from 'axios';
+
 const API_URL = 'https://social-media-app-1-0wkt.onrender.com';
 
 interface Post {
@@ -35,7 +36,7 @@ const Feed = () => {
     if (!headers) return;
 
     try {
-      const response = await axios.post(`${API_URL}/api/posts`, 
+      await axios.post(`${API_URL}/api/posts`, 
         { content: newPost },
         { headers }
       );
@@ -55,7 +56,7 @@ const Feed = () => {
     if (!headers) return;
 
     try {
-      const response = await axios.post(
+      await axios.post(
         `${API_URL}/api/posts/${postId}/like`,
         {},
         { headers }
